@@ -19,8 +19,14 @@ fn user_str(id: &RawStr) -> String {
     format!("you called user_str() with: {}", id)
 }
 
+#[get("/hello?<name>")]
+fn hello(name: Option<String>) -> String {
+    name.map(|name| format!("Hi, {}!", name))
+      .unwrap_or_else(|| "Hello!".into())
+}
+
 fn main() {
     rocket::ignite()
-        .mount("/", routes![user, user_int, user_str])
+        .mount("/", routes![user, user_int, user_str, hello])
         .launch();
 }
