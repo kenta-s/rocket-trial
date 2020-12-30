@@ -2,20 +2,25 @@
 
 #[macro_use] extern crate rocket;
 
-mod other {
-    #[get("/world")]
-    pub fn world() -> &'static str {
-        "Hello, world!"
-    }
+use rocket::http::RawStr;
+
+#[get("/user/<id>")]
+fn user(id: usize) -> String {
+    format!("you called user() with: {}", id)
 }
 
-#[get("/hello")]
-pub fn hello() -> &'static str {
-    "Hello, outside world!"
+#[get("/user/<id>", rank = 2)]
+fn user_int(id: isize) -> String {
+    format!("you called user_int() with: {}", id)
+}
+
+#[get("/user/<id>", rank = 3)]
+fn user_str(id: &RawStr) -> String {
+    format!("you called user_str() with: {}", id)
 }
 
 fn main() {
-    // /hello/hello
-    // /hello/world
-    rocket::ignite().mount("/hello", routes![hello, other::world]).launch();
+    rocket::ignite()
+        .mount("/", routes![user, user_int, user_str])
+        .launch();
 }
